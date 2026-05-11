@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLIQ Creative Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #faf9f7;
+  --near-black: #f2f0eb;
+  --dark: #e8e4de;
+  --surface: #e0dcd5;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.14);
+  --white: #1c1a17;
+  --white-dim: rgba(28,26,23,0.58);
+  --white-faint: rgba(28,26,23,0.38);
+  --cream: #f5f1eb;
+  --gold: #a8752e;
+  --gold-dim: rgba(168,117,46,0.12);
+  --gold-faint: rgba(168,117,46,0.05);
+  --nav-scrolled-bg: rgba(250,249,247,0.94);
+  --mobile-menu-bg: rgba(250,249,247,0.98);
+  --logo-filter: grayscale(1) brightness(0.12);
+  --hero-snap-opacity: 0.07;
+  --hero-snap-filter: grayscale(1) brightness(0.05);
+  --cursor-ring-color: rgba(28,26,23,0.18);
+  --btn-main-shadow: rgba(28,26,23,0.08);
+  --form-shadow: rgba(28,26,23,0.07);
+  --primary-logo-filter: brightness(0);
+  color-scheme: light;
+}
+[data-theme="dark"] {
+  --black: #080808;
+  --near-black: #0c0c0c;
+  --dark: #111;
+  --surface: #161616;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --white: #f2ede8;
+  --white-dim: rgba(242,237,232,0.55);
+  --white-faint: rgba(242,237,232,0.22);
+  --cream: #f0ebe5;
+  --gold: #c9a96e;
+  --gold-dim: rgba(201,169,110,0.15);
+  --gold-faint: rgba(201,169,110,0.06);
+  --nav-scrolled-bg: rgba(8,8,8,0.88);
+  --mobile-menu-bg: rgba(8,8,8,0.98);
+  --logo-filter: grayscale(1) brightness(5);
+  --hero-snap-opacity: 0.12;
+  --hero-snap-filter: grayscale(1) brightness(3);
+  --cursor-ring-color: rgba(242,237,232,0.3);
+  --btn-main-shadow: rgba(242,237,232,0.12);
+  --form-shadow: rgba(242,237,232,0.1);
+  --primary-logo-filter: brightness(1);
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;cursor:none}
+
+/* GRAIN OVERLAY */
+body::after{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:0.028;pointer-events:none;z-index:9997;animation:grainShift 0.15s steps(1) infinite;
+}
+@keyframes grainShift{0%{background-position:0 0}25%{background-position:-30px 15px}50%{background-position:20px -10px}75%{background-position:-10px 25px}100%{background-position:15px -5px}}
+
+/* CURSOR */
+#cur{position:fixed;width:8px;height:8px;background:#fff;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .2s,height .2s}
+#cur-ring{position:fixed;width:36px;height:36px;border:1px solid var(--cursor-ring-color);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .35s,height .35s,opacity .35s}
+body.cursor-big #cur{width:16px;height:16px}
+body.cursor-big #cur-ring{width:60px;height:60px;border-color:rgba(201,169,110,0.5)}
+
+/* LOADER */
+#loader{position:fixed;inset:0;background:var(--black);z-index:9500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+#loader.out{animation:loaderOut 1s cubic-bezier(.77,0,.18,1) forwards}
+@keyframes loaderOut{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-100%);opacity:0}}
+.ld-logo{opacity:0;transform:translateY(40px);transition:opacity 0.9s ease,transform 0.9s ease}
+.ld-logo.show{opacity:1;transform:translateY(0)}
+.ld-wordmark{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.4em;text-transform:uppercase;color:var(--white-faint);margin-top:20px;opacity:0;transition:opacity 0.8s ease 1.4s}
+.ld-wordmark.show{opacity:1}
+.ld-line{width:1px;height:0;background:linear-gradient(to bottom,var(--cursor-ring-color),transparent);margin:0 auto;transition:height 0.8s ease 1.8s}
+.ld-line.show{height:60px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:28px 56px;display:flex;align-items:center;justify-content:space-between;transition:all .5s ease}
+nav.scrolled{background:var(--nav-scrolled-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);padding:18px 56px;border-bottom:1px solid var(--border)}
+.nav-logo-wrap{display:flex;align-items:center;gap:14px;text-decoration:none}
+.nav-logo-icon{width:28px;height:36px;flex-shrink:0}
+.nav-logo-icon svg{width:100%;height:100%}
+.nav-logo-text{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;letter-spacing:0.22em;color:var(--white);text-transform:uppercase}
+.nav-logo-sub{font-size:8px;letter-spacing:0.3em;color:var(--white-faint);font-weight:400}
+.nav-links{display:flex;gap:40px;list-style:none}
+.nav-links a{font-size:11px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:var(--white-dim);text-decoration:none;transition:color .2s ease;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-5px;left:0;width:0;height:1px;background:var(--gold);transition:width .3s ease}
+.nav-links a:hover{color:var(--white)}
+.nav-links a:hover::after{width:100%}
+.nav-cta{font-size:11px;font-weight:400;letter-spacing:0.12em;color:var(--white);border:1px solid var(--border2);padding:10px 24px;border-radius:0;text-decoration:none;transition:all .25s;text-transform:uppercase}
+.nav-cta:hover{background:var(--white);color:var(--black)}
+.hamburger{display:none;flex-direction:column;gap:6px;cursor:pointer;padding:4px}
+.hamburger span{width:22px;height:1px;background:var(--white);display:block;transition:all .3s}
+
+/* HERO */
+#hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;text-align:center;padding:140px 48px 100px}
+
+.hero-bg-glow{position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 50%,rgba(201,169,110,0.04) 0%,transparent 65%);pointer-events:none}
+
+/* BIG SNAP ICON IN BACKGROUND */
+.hero-snap-bg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(600px,80vw);height:min(780px,100vw);opacity:0;pointer-events:none;animation:heroSnapFadeIn 2s ease 2.8s forwards}
+@keyframes heroSnapFadeIn{0%{opacity:0;transform:translate(-50%,-50%) scale(0.92)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.hero-snap-bg img{width:100%;height:100%;object-fit:contain;opacity:var(--hero-snap-opacity);filter:var(--hero-snap-filter);animation:heroSnapFloat 8s ease-in-out infinite}
+@keyframes heroSnapFloat{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-18px) rotate(1deg)}}
+
+.hero-eyebrow{font-size:10px;font-weight:400;letter-spacing:0.35em;text-transform:uppercase;color:var(--gold);margin-bottom:36px;opacity:0;transform:translateY(16px);animation:fadeUp .8s ease 2.6s forwards;position:relative;z-index:2}
+h1.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(52px,9vw,130px);font-weight:300;line-height:0.95;letter-spacing:-0.01em;opacity:0;transform:translateY(30px);animation:fadeUp 1s ease 2.9s forwards;position:relative;z-index:2;max-width:900px}
+.hero-title em{font-style:italic;font-weight:300}
+.hero-title .gold-word{color:var(--gold)}
+.hero-sub{font-size:clamp(13px,1.4vw,15px);color:var(--white-dim);font-weight:300;max-width:420px;line-height:1.9;margin-top:32px;letter-spacing:0.04em;opacity:0;transform:translateY(16px);animation:fadeUp .8s ease 3.2s forwards;position:relative;z-index:2}
+.hero-actions{display:flex;align-items:center;gap:24px;margin-top:52px;opacity:0;transform:translateY(16px);animation:fadeUp .8s ease 3.4s forwards;position:relative;z-index:2}
+.btn-main{display:inline-flex;align-items:center;gap:12px;background:var(--white);color:var(--black);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;padding:16px 36px;text-decoration:none;transition:transform .2s,box-shadow .2s;border:none;cursor:pointer}
+.btn-main:hover{transform:translateY(-2px);box-shadow:0 16px 50px var(--btn-main-shadow)}
+.btn-ghost{display:inline-flex;align-items:center;gap:10px;background:transparent;color:var(--white-dim);font-size:11px;font-weight:300;letter-spacing:0.16em;text-transform:uppercase;padding:16px 0;text-decoration:none;transition:color .2s;border-bottom:1px solid var(--border);cursor:pointer}
+.btn-ghost:hover{color:var(--white)}
+.hero-scroll{position:absolute;bottom:44px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:12px;opacity:0;animation:fadeIn .8s ease 3.8s forwards;z-index:2}
+.hero-scroll-line{width:1px;height:56px;background:linear-gradient(to bottom,var(--cursor-ring-color),transparent);animation:scrollPulse 2.2s ease infinite}
+@keyframes scrollPulse{0%,100%{opacity:.6;transform:scaleY(1)}50%{opacity:.2;transform:scaleY(0.7)}}
+.hero-scroll span{font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--white-faint)}
+
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{to{opacity:1}}
+
+/* SNAP DIVIDER */
+.snap-divider{display:flex;align-items:center;justify-content:center;padding:40px 0;gap:24px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.snap-divider-icon{width:22px;height:28px;opacity:0.25}
+.snap-divider-icon img{width:100%;height:100%;object-fit:contain;filter:var(--logo-filter)}
+.snap-divider-line{flex:1;height:1px;background:linear-gradient(to right,transparent,var(--border2),transparent)}
+.snap-divider-text{font-size:9px;letter-spacing:0.4em;text-transform:uppercase;color:var(--white-faint)}
+
+/* CLIENTS */
+#clients{padding:52px 0;overflow:hidden;background:var(--near-black)}
+.clients-track{display:flex;gap:72px;animation:marquee 20s linear infinite;white-space:nowrap}
+.client-item{display:flex;align-items:center;gap:72px;flex-shrink:0}
+.client-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--white-faint)}
+.client-sep{width:5px;height:5px;border-radius:50%;background:var(--gold);opacity:0.3;flex-shrink:0}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* SERVICES */
+#services{padding:140px 0;background:var(--black)}
+.container{max-width:1200px;margin:0 auto;padding:0 56px}
+.section-eyebrow{display:flex;align-items:center;gap:16px;font-size:9px;font-weight:400;letter-spacing:0.35em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.section-eyebrow::before{content:'';width:24px;height:1px;background:var(--gold)}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,5.5vw,80px);font-weight:300;line-height:1;letter-spacing:-0.01em}
+.section-title em{font-style:italic}
+.services-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:80px;gap:40px;flex-wrap:wrap}
+.services-tagline{max-width:300px;font-size:14px;color:var(--white-dim);line-height:1.8;font-weight:300}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.svc{background:var(--black);padding:52px 44px;position:relative;overflow:hidden;transition:background .4s}
+.svc::before{content:'';position:absolute;inset:0;background:var(--gold-faint);opacity:0;transition:opacity .4s}
+.svc:hover{background:var(--near-black)}
+.svc:hover::before{opacity:1}
+.svc-snap{position:absolute;bottom:-20px;right:-20px;width:80px;height:100px;opacity:0.03;transition:opacity .5s,transform .5s}
+.svc:hover .svc-snap{opacity:0.07;transform:translate(-8px,8px) rotate(5deg)}
+.svc-snap img{width:100%;height:100%;object-fit:contain;filter:var(--logo-filter)}
+.svc-num{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.2em;color:var(--white-faint);margin-bottom:40px;display:block}
+.svc-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:16px;letter-spacing:0.02em}
+.svc-desc{font-size:13px;color:var(--white-dim);line-height:1.8;font-weight:300}
+.svc-line{position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--gold);transition:width .5s ease}
+.svc:hover .svc-line{width:100%}
+
+/* PORTFOLIO */
+#portfolio{padding:140px 0;background:var(--near-black)}
+.port-header{margin-bottom:72px}
+.port-grid{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:auto;gap:2px;background:var(--border)}
+.port-item{position:relative;overflow:hidden;background:var(--surface);cursor:pointer}
+.port-item:nth-child(1){grid-column:1/8;aspect-ratio:16/10}
+.port-item:nth-child(2){grid-column:8/13;aspect-ratio:4/5}
+.port-item:nth-child(3){grid-column:1/5;aspect-ratio:1}
+.port-item:nth-child(4){grid-column:5/10;aspect-ratio:1}
+.port-item:nth-child(5){grid-column:10/13;aspect-ratio:1}
+.port-item:nth-child(6){grid-column:1/13;aspect-ratio:21/9}
+.port-vis{width:100%;height:100%;position:absolute;inset:0;transition:transform .8s cubic-bezier(.25,.46,.45,.94)}
+.port-item:hover .port-vis{transform:scale(1.06)}
+.port-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(8,8,8,0.95) 0%,rgba(8,8,8,0.2) 50%,transparent 100%);opacity:0;transition:opacity .5s ease;display:flex;flex-direction:column;justify-content:flex-end;padding:36px}
+.port-item:hover .port-overlay{opacity:1}
+.port-tag{font-size:9px;font-weight:400;letter-spacing:0.28em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.port-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;letter-spacing:0.02em;font-style:italic}
+/* PORT SNAP WATERMARK */
+.port-snap-mark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40%;opacity:0;transition:opacity .5s}
+.port-item:hover .port-snap-mark{opacity:0.06}
+.port-snap-mark img{width:100%;height:auto;filter:var(--logo-filter)}
+
+/* ABOUT */
+#about{padding:160px 0;background:var(--black)}
+.about-inner{display:grid;grid-template-columns:1fr 1fr;gap:120px;align-items:center}
+.about-left .section-eyebrow{margin-bottom:24px}
+.about-text{font-size:15px;color:var(--white-dim);line-height:1.9;font-weight:300;margin-bottom:20px}
+.about-manifesto{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2.5vw,32px);font-style:italic;font-weight:300;line-height:1.5;color:var(--white);border-left:1px solid var(--gold);padding-left:28px;margin:44px 0}
+.about-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:36px}
+.about-tag{font-size:10px;font-weight:400;letter-spacing:0.14em;text-transform:uppercase;color:var(--white-faint);border:1px solid var(--border);padding:8px 18px;transition:all .2s}
+.about-tag:hover{border-color:var(--gold);color:var(--gold)}
+.about-right{position:relative;aspect-ratio:3/4}
+.about-snap-visual{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.about-snap-bg-rect{position:absolute;top:0;left:10%;width:75%;height:80%;border:1px solid var(--border)}
+.about-snap-icon-wrap{position:relative;z-index:2;width:55%;height:auto}
+.about-snap-icon-wrap img{width:100%;height:auto;opacity:0.7;filter:var(--logo-filter)}
+.about-glow{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(201,169,110,0.1) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.about-years{position:absolute;bottom:0;right:0;background:var(--surface);border:1px solid var(--border);padding:36px 32px;text-align:center}
+.about-years-num{font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;color:var(--gold);line-height:1;display:block}
+.about-years-label{font-size:9px;letter-spacing:0.3em;text-transform:uppercase;color:var(--white-faint);margin-top:8px;display:block}
+
+/* STATS */
+#stats{padding:0;background:var(--near-black);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border)}
+.stat-item{background:var(--near-black);padding:72px 48px;text-align:center;position:relative;overflow:hidden;transition:background .3s}
+.stat-item:hover{background:var(--surface)}
+.stat-snap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:76px;opacity:0.03}
+.stat-snap img{width:100%;height:100%;object-fit:contain;filter:var(--logo-filter)}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:clamp(56px,5vw,80px);font-weight:300;color:var(--white);line-height:1;display:block}
+.stat-label{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--white-faint);margin-top:12px;display:block}
+
+/* TESTIMONIALS */
+#testimonials{padding:140px 0;background:var(--black)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.testi-card{background:var(--black);padding:52px 44px;position:relative;overflow:hidden;transition:background .3s}
+.testi-card:hover{background:var(--near-black)}
+.testi-snap{position:absolute;top:28px;right:28px;width:24px;height:30px;opacity:0.08}
+.testi-snap img{width:100%;height:100%;object-fit:contain;filter:var(--logo-filter)}
+.testi-stars{display:flex;gap:6px;margin-bottom:28px}
+.star{font-size:11px;color:var(--gold);letter-spacing:3px}
+.testi-text{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;font-style:italic;color:var(--white-dim);line-height:1.75;margin-bottom:36px}
+.testi-author{display:flex;align-items:center;gap:14px}
+.testi-av{width:38px;height:38px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--gold);flex-shrink:0}
+.testi-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.04em}
+.testi-role{font-size:11px;color:var(--white-faint);margin-top:3px;letter-spacing:0.08em}
+
+/* CONTACT */
+#contact{padding:140px 0;background:var(--near-black)}
+.contact-inner{display:grid;grid-template-columns:1fr 1.2fr;gap:120px;align-items:start}
+.contact-left-desc{font-size:14px;color:var(--white-dim);line-height:1.9;font-weight:300;margin-top:20px;margin-bottom:52px}
+.contact-socials{display:flex;flex-direction:column}
+.social-link{display:flex;align-items:center;gap:16px;font-size:12px;color:var(--white-dim);text-decoration:none;padding:18px 0;border-bottom:1px solid var(--border);transition:color .2s;letter-spacing:0.06em}
+.social-link:hover{color:var(--white)}
+.social-link:hover .soc-icon{border-color:var(--gold);color:var(--gold)}
+.soc-icon{width:34px;height:34px;border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;flex-shrink:0}
+.contact-form{display:flex;flex-direction:column;gap:18px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:10px}
+.form-label{font-size:9px;font-weight:400;letter-spacing:0.28em;text-transform:uppercase;color:var(--white-faint)}
+.form-input,.form-select,.form-textarea{background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--white);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;padding:12px 0;outline:none;transition:border-color .2s;appearance:none;-webkit-appearance:none;width:100%}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--white-faint)}
+.form-select option{background:var(--surface)}
+.form-textarea{resize:vertical;min-height:100px}
+.form-submit{display:inline-flex;align-items:center;gap:12px;background:var(--white);color:var(--black);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;padding:18px 40px;border:none;cursor:pointer;margin-top:12px;align-self:flex-start;transition:transform .2s,box-shadow .2s}
+.form-submit:hover{transform:translateY(-2px);box-shadow:0 12px 40px var(--form-shadow)}
+
+/* FOOTER */
+footer{padding:56px 0;background:var(--black);border-top:1px solid var(--border)}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px}
+.footer-logo-wrap{display:flex;align-items:center;gap:12px}
+.footer-logo-wrap img{display:block}
+/* PRIMARY LOGOS — adapt to theme */
+.nav-logo-wrap img,
+.ld-logo img,
+.footer-logo-wrap img{filter:var(--primary-logo-filter);transition:filter .35s ease}
+.footer-copy{font-size:11px;color:var(--white-faint);letter-spacing:0.06em}
+.footer-links{display:flex;gap:32px;list-style:none}
+.footer-links a{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--white-faint);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--white)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s ease,transform .9s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}.reveal-delay-4{transition-delay:.4s}
+
+/* MOBILE */
+.mobile-menu{position:fixed;inset:0;background:var(--mobile-menu-bg);backdrop-filter:blur(24px);z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;opacity:0;visibility:hidden;transition:all .4s}
+.mobile-menu.open{opacity:1;visibility:visible}
+.mobile-menu a{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;font-style:italic;color:var(--white);text-decoration:none;transition:color .2s}
+.mobile-menu a:hover{color:var(--gold)}
+.menu-close{position:absolute;top:28px;right:48px;font-size:22px;color:var(--white-dim);background:none;border:none;cursor:pointer}
+
+/* PORTFOLIO VISUALS */
+.pv{width:100%;height:100%;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pv1{background:linear-gradient(135deg,#0a0a0a,#101018)}
+.pv2{background:linear-gradient(135deg,#0c0a08,#18140e)}
+.pv3{background:linear-gradient(135deg,#080c0a,#0f1810)}
+.pv4{background:linear-gradient(135deg,#0c080e,#180d1c)}
+.pv5{background:linear-gradient(135deg,#0c0a08,#201808)}
+.pv6{background:linear-gradient(135deg,#080808,#141414)}
+.pv-grain{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");opacity:0.08}
+.pv-glow{position:absolute;border-radius:50%;pointer-events:none}
+.pv-text{position:absolute;font-family:'Cormorant Garamond',serif;font-weight:300;font-style:italic;color:rgba(242,237,232,0.07);letter-spacing:0.15em;text-align:center;pointer-events:none;user-select:none}
+
+@media(max-width:900px){
+  nav{padding:20px 24px}
+  nav.scrolled{padding:14px 24px}
+  .nav-links,.nav-cta{display:none}
+  .hamburger{display:flex}
+  .container{padding:0 24px}
+  #hero{padding:120px 24px 80px}
+  .services-grid{grid-template-columns:1fr 1fr}
+  .port-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto}
+  .port-item:nth-child(1){grid-column:1/3;aspect-ratio:16/9}
+  .port-item:nth-child(2){grid-column:1/2;aspect-ratio:1}
+  .port-item:nth-child(3){grid-column:2/3;aspect-ratio:1}
+  .port-item:nth-child(4){grid-column:1/2;aspect-ratio:1}
+  .port-item:nth-child(5){grid-column:2/3;aspect-ratio:1}
+  .port-item:nth-child(6){grid-column:1/3;aspect-ratio:16/9}
+  .about-inner{grid-template-columns:1fr;gap:60px}
+  .about-right{display:none}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .testi-grid{grid-template-columns:1fr}
+  .contact-inner{grid-template-columns:1fr;gap:64px}
+  .form-row{grid-template-columns:1fr}
+  .footer-inner{flex-direction:column;text-align:center;align-items:center}
+}
+@media(max-width:600px){
+  .services-grid{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr}
+}
+/* THEME TOGGLE */
+.theme-toggle{background:none;border:1px solid var(--border2);color:var(--white-dim);width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .25s,color .25s;flex-shrink:0}
+.theme-toggle:hover{border-color:var(--gold);color:var(--gold)}
+.icon-sun{display:none}
+.icon-moon{display:block}
+[data-theme="dark"] .icon-sun{display:block}
+[data-theme="dark"] .icon-moon{display:none}
+
+/* LIGHT MODE — portfolio visuals keep their own dark bg intentionally */
+/* PORT OVERLAY stays dark so it works over dark pv backgrounds */
+
+/* SMOOTH THEME TRANSITION */
+body,nav,footer,section,.svc,.testi-card,.stat-item,.about-years,#loader,.mobile-menu,.snap-divider,#clients{
+  transition:background-color .35s ease,border-color .35s ease;
+}
+.nav-links a,.footer-links a,.social-link,.about-tag,#cur,#cur-ring{
+  transition:color .25s ease,border-color .25s ease;
+}
+
+::selection{background:rgba(201,169,110,0.3);color:var(--white)}
+</style>
+</head>
+<body>
+
+<!-- CURSORS -->
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="ld-logo">
+    <img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt="CLIQ Creative Studio" style="width:220px;margin-bottom:32px">
+    <span id="ldWord" style="display:none"></span>
+    <div class="ld-line" id="ldLine"></div>
+  </div>
+</div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <button class="menu-close" id="menuClose">✕</button>
+  <a href="#services" onclick="closeMob()">Services</a>
+  <a href="#portfolio" onclick="closeMob()">Work</a>
+  <a href="#about" onclick="closeMob()">About</a>
+  <a href="#contact" onclick="closeMob()">Contact</a>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo-wrap">
+    <img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt="CLIQ Creative Studio" style="height:42px;width:auto">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#portfolio">Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#testimonials">Studio</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Start a Project</a>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+    <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>
+    <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+  </button>
+  <div class="hamburger" id="hamburger" onclick="openMob()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-glow"></div>
+
+  <!-- BIG BACKGROUND SNAP ICON -->
+  <div class="hero-snap-bg" aria-hidden="true">
+    <img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt="">
+  </div>
+
+  <div class="hero-eyebrow">Creative Studio — Est. 2019</div>
+  <h1 class="hero-title">
+    Visuals that make<br>people <em class="gold-word">stop.</em>
+  </h1>
+  <p class="hero-sub">Premium creative agency crafting cinematic content, bold branding, and visual stories that move culture forward.</p>
+  <div class="hero-actions">
+    <a href="#portfolio" class="btn-main">View Our Work <span>→</span></a>
+    <a href="#contact" class="btn-ghost">Start a Project</a>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="hero-scroll-line"></div>
+  </div>
+</section>
+
+<!-- SNAP DIVIDER -->
+<div class="snap-divider">
+  <div class="snap-divider-line"></div>
+  <div class="snap-divider-icon">
+    <img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt="">
+  </div>
+  <div class="snap-divider-text">CLIQ Creative Studio</div>
+  <div class="snap-divider-icon">
+    <img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt="">
+  </div>
+  <div class="snap-divider-line"></div>
+</div>
+
+<!-- CLIENTS -->
+<div id="clients">
+  <div class="clients-track" id="ct">
+    <div class="client-item"><span class="client-name">ZARA Studio</span><span class="client-sep"></span><span class="client-name">NOVA Records</span><span class="client-sep"></span><span class="client-name">Pulse Agency</span><span class="client-sep"></span><span class="client-name">Lune Brands</span><span class="client-sep"></span><span class="client-name">Vertex Creative</span><span class="client-sep"></span><span class="client-name">Arc Motion</span><span class="client-sep"></span><span class="client-name">BLVCK Media</span><span class="client-sep"></span><span class="client-name">Solaris Films</span><span class="client-sep"></span></div>
+    <div class="client-item"><span class="client-name">ZARA Studio</span><span class="client-sep"></span><span class="client-name">NOVA Records</span><span class="client-sep"></span><span class="client-name">Pulse Agency</span><span class="client-sep"></span><span class="client-name">Lune Brands</span><span class="client-sep"></span><span class="client-name">Vertex Creative</span><span class="client-sep"></span><span class="client-name">Arc Motion</span><span class="client-sep"></span><span class="client-name">BLVCK Media</span><span class="client-sep"></span><span class="client-name">Solaris Films</span><span class="client-sep"></span></div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="container">
+    <div class="services-header">
+      <div>
+        <div class="section-eyebrow reveal">What We Do</div>
+        <h2 class="section-title reveal reveal-delay-1">Creative<br><em>Services</em></h2>
+      </div>
+      <p class="services-tagline reveal reveal-delay-2">From concept to final frame — visual identity that makes brands impossible to ignore.</p>
+    </div>
+    <div class="services-grid">
+      <div class="svc reveal">
+        <div class="svc-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <span class="svc-num">01</span>
+        <div class="svc-name">Graphic Design</div>
+        <p class="svc-desc">Bold visual systems. Posters, print, editorial — crafted for maximum impact and unmistakable identity.</p>
+        <div class="svc-line"></div>
+      </div>
+      <div class="svc reveal reveal-delay-1">
+        <div class="svc-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <span class="svc-num">02</span>
+        <div class="svc-name">Photography</div>
+        <p class="svc-desc">Fashion, product, portrait — we capture moments that speak before any caption does.</p>
+        <div class="svc-line"></div>
+      </div>
+      <div class="svc reveal reveal-delay-2">
+        <div class="svc-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <span class="svc-num">03</span>
+        <div class="svc-name">Video Editing</div>
+        <p class="svc-desc">Cinematic cuts, motion graphics, color grading — footage transformed into powerful visual narratives.</p>
+        <div class="svc-line"></div>
+      </div>
+      <div class="svc reveal">
+        <div class="svc-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <span class="svc-num">04</span>
+        <div class="svc-name">Branding</div>
+        <p class="svc-desc">Logo, palette, tone, and full visual language — brands people actually remember and feel.</p>
+        <div class="svc-line"></div>
+      </div>
+      <div class="svc reveal reveal-delay-1">
+        <div class="svc-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <span class="svc-num">05</span>
+        <div class="svc-name">Content Creation</div>
+        <p class="svc-desc">Reels, stories, campaigns — thumb-stopping content built for every platform and audience.</p>
+        <div class="svc-line"></div>
+      </div>
+      <div class="svc reveal reveal-delay-2">
+        <div class="svc-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <span class="svc-num">06</span>
+        <div class="svc-name">Creative Campaigns</div>
+        <p class="svc-desc">Strategy-led visual campaigns from concept to release. We make the work that gets shared.</p>
+        <div class="svc-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="container">
+    <div class="port-header">
+      <div class="section-eyebrow reveal">Selected Work</div>
+      <h2 class="section-title reveal reveal-delay-1">The <em>Work</em></h2>
+    </div>
+  </div>
+  <div style="padding:0 2px">
+    <div class="port-grid">
+
+      <div class="port-item reveal">
+        <div class="port-vis pv1">
+          <div class="pv-grain"></div>
+          <div class="pv-glow" style="width:280px;height:280px;background:radial-gradient(circle,rgba(201,169,110,0.12) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+          <div class="pv-text" style="font-size:clamp(40px,8vw,100px)">VOLT</div>
+        </div>
+        <div class="port-snap-mark"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <div class="port-overlay"><div class="port-tag">Branding</div><div class="port-title">VOLT Energy — Brand Identity</div></div>
+      </div>
+
+      <div class="port-item reveal reveal-delay-1">
+        <div class="port-vis pv2">
+          <div class="pv-grain"></div>
+          <div class="pv-glow" style="width:250px;height:250px;background:radial-gradient(circle,rgba(201,169,110,0.1) 0%,transparent 70%);top:40%;left:40%;transform:translate(-50%,-50%)"></div>
+          <div class="pv-text" style="font-size:clamp(30px,5vw,60px)">NOVA</div>
+        </div>
+        <div class="port-snap-mark"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <div class="port-overlay"><div class="port-tag">Music Visual</div><div class="port-title">NOVA — Album Cover</div></div>
+      </div>
+
+      <div class="port-item reveal">
+        <div class="port-vis pv3">
+          <div class="pv-grain"></div>
+          <div class="pv-glow" style="width:180px;height:300px;background:radial-gradient(ellipse,rgba(201,169,110,0.08) 0%,transparent 70%);top:30%;left:50%;transform:translateX(-50%)"></div>
+        </div>
+        <div class="port-snap-mark"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <div class="port-overlay"><div class="port-tag">Photography</div><div class="port-title">Lune — Fashion Shoot</div></div>
+      </div>
+
+      <div class="port-item reveal reveal-delay-1">
+        <div class="port-vis pv4">
+          <div class="pv-grain"></div>
+          <div class="pv-glow" style="width:200px;height:200px;background:radial-gradient(circle,rgba(139,92,246,0.1) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+        </div>
+        <div class="port-snap-mark"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <div class="port-overlay"><div class="port-tag">Social Media</div><div class="port-title">Pulse — Campaign Set</div></div>
+      </div>
+
+      <div class="port-item reveal reveal-delay-2">
+        <div class="port-vis pv5">
+          <div class="pv-grain"></div>
+          <div class="pv-glow" style="width:160px;height:160px;background:radial-gradient(circle,rgba(201,169,110,0.15) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+        </div>
+        <div class="port-snap-mark"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <div class="port-overlay"><div class="port-tag">Event</div><div class="port-title">Glow Festival — Key Art</div></div>
+      </div>
+
+      <div class="port-item reveal">
+        <div class="port-vis pv6">
+          <div class="pv-grain"></div>
+          <div class="pv-glow" style="width:500px;height:200px;background:radial-gradient(ellipse,rgba(201,169,110,0.06) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+          <div class="pv-text" style="font-size:clamp(30px,6vw,90px);letter-spacing:0.3em">CINEMATIC</div>
+        </div>
+        <div class="port-snap-mark" style="width:20%"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <div class="port-overlay"><div class="port-tag">Video</div><div class="port-title">Arc — Short Film Title Sequence</div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-inner">
+      <div class="about-left">
+        <div class="section-eyebrow reveal">About the Studio</div>
+        <h2 class="section-title reveal reveal-delay-1">We make<br><em>visuals</em> that<br>hit different.</h2>
+        <blockquote class="about-manifesto reveal reveal-delay-2">"Great creative doesn't just look good — it makes people feel something they can't explain."</blockquote>
+        <p class="about-text reveal reveal-delay-3">CLIQ Studio is a premium creative agency built for brands that refuse to be ordinary. We work at the intersection of design, photography, motion, and strategy — producing visual experiences that stop feeds, move audiences, and build lasting identities.</p>
+        <div class="about-tags reveal reveal-delay-4">
+          <span class="about-tag">Creative Direction</span>
+          <span class="about-tag">Visual Strategy</span>
+          <span class="about-tag">Motion</span>
+          <span class="about-tag">Branding</span>
+          <span class="about-tag">Photography</span>
+          <span class="about-tag">Content</span>
+        </div>
+      </div>
+      <div class="about-right reveal reveal-delay-2">
+        <div class="about-snap-visual">
+          <div class="about-snap-bg-rect"></div>
+          <div class="about-glow"></div>
+          <div class="about-snap-icon-wrap">
+            <img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt="CLIQ Creative Studio">
+          </div>
+          <div class="about-years">
+            <span class="about-years-num">06+</span>
+            <span class="about-years-label">Years of Craft</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div style="max-width:100%">
+    <div class="stats-grid">
+      <div class="stat-item reveal">
+        <div class="stat-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <span class="stat-num" data-target="340">0</span>
+        <span class="stat-label">Projects Completed</span>
+      </div>
+      <div class="stat-item reveal reveal-delay-1">
+        <div class="stat-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <span class="stat-num" data-target="120">0</span>
+        <span class="stat-label">Clients Worldwide</span>
+      </div>
+      <div class="stat-item reveal reveal-delay-2">
+        <div class="stat-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <span class="stat-num" data-target="48" data-suffix="M+">0</span>
+        <span class="stat-label">Views Generated</span>
+      </div>
+      <div class="stat-item reveal reveal-delay-3">
+        <div class="stat-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <span class="stat-num" data-target="85">0</span>
+        <span class="stat-label">Creative Campaigns</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="container">
+    <div style="margin-bottom:72px">
+      <div class="section-eyebrow reveal">Client Words</div>
+      <h2 class="section-title reveal reveal-delay-1">What they <em>say</em></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <div class="testi-stars"><span class="star">★★★★★</span></div>
+        <p class="testi-text">"CLIQ completely transformed how our brand looks. They didn't just design — they understood our world and built a visual identity that feels like us, but elevated."</p>
+        <div class="testi-author"><div class="testi-av">SR</div><div><div class="testi-name">Sara Reeves</div><div class="testi-role">Founder, Lune Brands</div></div></div>
+      </div>
+      <div class="testi-card reveal reveal-delay-1">
+        <div class="testi-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <div class="testi-stars"><span class="star">★★★★★</span></div>
+        <p class="testi-text">"The video they delivered for our album launch was on another level. Cinematic, emotional, viral — everything we wanted. Working with CLIQ feels like true creative collaboration."</p>
+        <div class="testi-author"><div class="testi-av">DM</div><div><div class="testi-name">DJ Milo</div><div class="testi-role">Artist, NOVA Records</div></div></div>
+      </div>
+      <div class="testi-card reveal reveal-delay-2">
+        <div class="testi-snap"><img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt=""></div>
+        <div class="testi-stars"><span class="star">★★★★★</span></div>
+        <p class="testi-text">"Our social media engagement tripled after CLIQ took over. Every asset looks premium, consistent, and on-brand. They operate like a world-class agency."</p>
+        <div class="testi-author"><div class="testi-av">TK</div><div><div class="testi-name">Tom Kasner</div><div class="testi-role">CMO, Vertex Creative</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="contact-inner">
+      <div>
+        <div class="section-eyebrow reveal">Get in Touch</div>
+        <h2 class="section-title reveal reveal-delay-1">Let's create<br>something<br><em>remarkable.</em></h2>
+        <p class="contact-left-desc reveal reveal-delay-2">Have a project in mind? Tell us what you're building. We'll bring the vision, craft, and execution.</p>
+        <div class="contact-socials reveal reveal-delay-3">
+          <a href="#" class="social-link"><div class="soc-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></div>@cliqstudio <span style="margin-left:auto;opacity:.3;font-size:11px">↗</span>
+          </a>
+          <a href="#" class="social-link"><div class="soc-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>TikTok / cliqstudio <span style="margin-left:auto;opacity:.3;font-size:11px">↗</span></a>
+          <a href="mailto:hello@cliqstudio.co" class="social-link"><div class="soc-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>hello@cliqstudio.co <span style="margin-left:auto;opacity:.3;font-size:11px">↗</span></a>
+        </div>
+      </div>
+      <div class="contact-form reveal reveal-delay-2">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" placeholder="Your name"></div>
+          <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" placeholder="you@email.com"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Project Type</label>
+          <select class="form-select"><option value="" disabled selected>Select a service</option><option>Graphic Design</option><option>Photography</option><option>Video Editing</option><option>Branding</option><option>Content Creation</option><option>Creative Campaign</option></select>
+        </div>
+        <div class="form-group"><label class="form-label">Message</label><textarea class="form-textarea" placeholder="Tell us about your project, timeline, and vision..."></textarea></div>
+        <button class="form-submit" onclick="handleSubmit(this)">Send Message <span>→</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-logo-wrap">
+        <img src="https://cdn.discordapp.com/attachments/1385703973817946223/1502784720503705703/cliqlogos-Recovered.png?ex=6a00f8d5&is=69ffa755&hm=b6afbaef1a1bc8e924a9bda43a11f0f03f36712fd835b69612a4dab05f24cae3&" alt="CLIQ Creative Studio" style="height:36px;width:auto;opacity:0.85">
+      </div>
+      <p class="footer-copy">© 2025 CLIQ Studio. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#portfolio">Work</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<script>
+// THEME
+(function(){
+  const html = document.documentElement;
+  if(localStorage.getItem('cliq-theme')==='dark') html.setAttribute('data-theme','dark');
+  document.getElementById('themeToggle').addEventListener('click',function(){
+    const dark = html.getAttribute('data-theme')==='dark';
+    if(dark){ html.removeAttribute('data-theme'); localStorage.setItem('cliq-theme','light'); }
+    else { html.setAttribute('data-theme','dark'); localStorage.setItem('cliq-theme','dark'); }
+  });
+})();
+
+// LOADER
+window.addEventListener('load', () => {
+  const ldLogo = document.querySelector('.ld-logo');
+  const ldWord = document.getElementById('ldWord');
+  const ldLine = document.getElementById('ldLine');
+  setTimeout(() => { ldLogo.classList.add('show'); ldWord.classList.add('show'); ldLine.classList.add('show'); }, 200);
+  setTimeout(() => { document.getElementById('loader').classList.add('out'); }, 2600);
+  setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 3600);
+});
+
+// CURSOR
+const cur = document.getElementById('cur'), ring = document.getElementById('cur-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cur.style.left = mx+'px'; cur.style.top = my+'px'; });
+(function raf() { rx += (mx-rx)*0.1; ry += (my-ry)*0.1; ring.style.left = rx+'px'; ring.style.top = ry+'px'; requestAnimationFrame(raf); })();
+document.querySelectorAll('a,button,.svc,.port-item').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-big'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-big'));
+});
+
+// NAV
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// MOBILE MENU
+function openMob() { document.getElementById('mobileMenu').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeMob() { document.getElementById('mobileMenu').classList.remove('open'); document.body.style.overflow=''; }
+document.getElementById('menuClose').addEventListener('click', closeMob);
+
+// REVEAL
+const obs = new IntersectionObserver(entries => entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// COUNTERS
+const cobs = new IntersectionObserver(entries => entries.forEach(e => {
+  if(e.isIntersecting && !e.target.dataset.done) {
+    e.target.dataset.done = '1';
+    const target = +e.target.dataset.target, suffix = e.target.dataset.suffix||'', dur = 2000, start = performance.now();
+    (function upd(now) {
+      const p = Math.min((now-start)/dur,1), v = Math.floor((1-Math.pow(1-p,3))*target);
+      e.target.textContent = v + (p===1?suffix:'');
+      if(p<1) requestAnimationFrame(upd);
+    })(performance.now());
+  }
+}), {threshold:0.5});
+document.querySelectorAll('.stat-num[data-target]').forEach(el => cobs.observe(el));
+
+// PARALLAX HERO SNAP
+window.addEventListener('scroll', () => {
+  const s = window.scrollY;
+  const bg = document.querySelector('.hero-snap-bg');
+  if(bg) bg.style.transform = `translate(-50%,-50%) translateY(${s*0.18}px)`;
+  const bgGlow = document.querySelector('.hero-bg-glow');
+  if(bgGlow) bgGlow.style.transform = `translateY(${s*0.1}px)`;
+});
+
+// FORM
+function handleSubmit(btn) {
+  btn.textContent = 'Message Sent ✓';
+  btn.style.background = 'var(--gold)';
+  btn.style.color = 'var(--black)';
+  setTimeout(() => { btn.innerHTML='Send Message <span>→</span>'; btn.style.background=''; btn.style.color=''; }, 3500);
+}
+</script>
+</body>
+</html>
